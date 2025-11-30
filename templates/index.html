@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sabudh • AI Healthcare Assistant</title>
+
+  <link rel="stylesheet" href="/static/style.css" />
+  <script defer src="/static/script.js"></script>
+</head>
+<body data-theme="dark">
+  <div class="app">
+
+    <!-- Landing dashboard (full light, centered) -->
+    <section id="landing" class="landing-hero">
+      <div class="landing-inner">
+        <div class="landing-left">
+          <h1 class="landing-title">Sabudh Healthcare Assistant</h1>
+          <p class="landing-sub">
+            An AI-powered medical companion to help you understand symptoms, treatment options,
+            and hospital policies with safe, grounded answers.
+          </p>
+
+          <div class="landing-highlights">
+            <div class="landing-card">
+              <span class="landing-icon">🩺</span>
+              <div>
+                <h3>Clinical‑grade guidance</h3>
+                <p>Backed by vetted medical documents and your uploaded sources.</p>
+              </div>
+            </div>
+            <div class="landing-card">
+              <span class="landing-icon">⚡</span>
+              <div>
+                <h3>Fast, concise answers</h3>
+                <p>Summaries in seconds, tuned for clarity and safety.</p>
+              </div>
+            </div>
+            <div class="landing-card">
+              <span class="landing-icon">🔒</span>
+              <div>
+                <h3>Privacy‑aware</h3>
+                <p>Your queries and files stay within your secure environment.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="landing-actions">
+            <button id="startChat" class="landing-primary">Start chatting</button>
+            <button id="viewDashboard" class="landing-secondary">View data dashboard</button>
+          </div>
+        </div>
+
+        <div class="landing-right">
+          <div class="landing-bot-card">
+            <div class="landing-bot-avatar"></div>
+            <div class="landing-bot-text">
+              <h2>Let’s get started with your health</h2>
+              <p>Ask about symptoms, medications, lab reports, or hospital workflows.</p>
+            </div>
+            <div class="landing-quick-grid">
+              <button class="landing-pill">Check symptoms</button>
+              <button class="landing-pill">Understand a lab report</button>
+              <button class="landing-pill">Post‑surgery care tips</button>
+              <button class="landing-pill">Hospital policy questions</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main chat shell (hidden initially) -->
+    <div id="chatShell" class="app-shell hidden">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo-glass">
+            <svg viewBox="0 0 24 24" width="34" height="34">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#73f0e6" />
+                  <stop offset="1" stop-color="#8a6bff" />
+                </linearGradient>
+              </defs>
+              <rect x="2" y="2" width="20" height="20" rx="6"
+                    fill="url(#g1)" opacity="0.95" />
+              <path d="M8 12h8M12 8v8"
+                    stroke="#042a2e"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="title">Sabudh</div>
+            <div class="sub">AI Healthcare Assistant</div>
+          </div>
+        </div>
+
+        <div class="chat-selector">
+          <div class="selector-header">
+            Chats <span id="chatCount">1</span>
+          </div>
+          <select id="chatSelect">
+            <option value="default">New Chat</option>
+          </select>
+          <button id="newChat" class="ghost small">+ New</button>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-btn active" data-view="chat">Chat</button>
+          <button class="nav-btn" data-view="ingest">Ingest</button>
+          <button class="nav-btn" data-view="sources">Sources</button>
+          <button class="nav-btn" data-view="activity">Activity</button>
+          <button class="nav-btn" data-view="settings">Settings</button>
+        </nav>
+
+        <div class="theme-toggle">
+          <button id="themeBtn" class="ghost full" data-theme="dark">🌙 Dark</button>
+        </div>
+
+        <div class="assistant-card">
+          <svg viewBox="0 0 120 120" class="doctor-avatar" aria-hidden>
+            ircle cx="60" cy="36" r="18" fill="#a8f0ee" />
+            <rect x="36" y="58" width="48" height="36" rx="8" fill="#e9fbfa" />
+            <path d="M46 66h28" stroke="#1f6b6c" stroke-width="2" stroke-linecap="round" />
+            <path d="M60 58v-6" stroke="#1f6b6c" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <div>
+            <div class="asst-name">Dr. Sabudh</div>
+            <div class="asst-role">Medical Advisor</div>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">© Sabudh Foundation</div>
+      </aside>
+
+      <!-- Main chat/dashboard area -->
+      <main class="main">
+        <header class="topbar">
+          <div class="page-title">Ask about health, symptoms, or policies</div>
+          <div class="top-right">
+            <button id="emojiBtn" class="icon-btn" title="Emoji">😊</button>
+            <button id="backToLanding" class="icon-btn" title="Home">⌂</button>
+          </div>
+        </header>
+
+        <section class="content">
+          <!-- Stats column -->
+          <div class="col stats-col">
+            <div class="card stat">
+              <div class="stat-title">Today</div>
+              <div class="stat-big"><span id="queriesToday">0</span></div>
+              <div class="stat-sub">queries</div>
+            </div>
+
+            <div class="card stat">
+              <div class="stat-title">Sources</div>
+              <div class="stat-big"><span id="sourcesCount">—</span></div>
+              <div class="stat-sub">indexed</div>
+            </div>
+
+            <div class="card small">
+              <div class="small-title">Quick Tips</div>
+              <ul>
+                <li>Ask concise questions (e.g., "symptoms of dengue")</li>
+                <li>Upload verified medical docs for grounded answers</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Chat column -->
+          <div class="col chat-col" id="view-chat">
+            <div class="chat-card">
+              <div class="chat-header">
+                <div>
+                  <div class="chat-title">Chat with Sabudh</div>
+                  <div class="chat-sub">
+                    Short, precise answers — grounded in uploaded sources.
+                  </div>
+                </div>
+                <div class="chat-actions">
+                  <button id="quickReplies" class="ghost small">Quick Replies ▼</button>
+                  <button id="clearChat" class="ghost small">Clear</button>
+                </div>
+              </div>
+
+              <div id="chatWindow" class="chat-window" aria-live="polite">
+                <div class="quick-replies">
+                  <button class="quick-btn" data-query="What are dengue symptoms?">
+                    Dengue symptoms
+                  </button>
+                  <button class="quick-btn" data-query="Asthma treatment options">
+                    Asthma treatment
+                  </button>
+                  <button class="quick-btn" data-query="COVID prevention tips">
+                    COVID prevention
+                  </button>
+                </div>
+                <div class="msg bot-msg">
+                  <div class="msg-avatar bot-avatar"></div>
+                  <div class="bubble">
+                    <strong>Dr. Sabudh</strong> — Ask me a healthcare question or try quick replies above.
+                  </div>
+                </div>
+              </div>
+
+              <form id="chatForm" class="chat-input" autocomplete="off">
+                <div class="input-group">
+                  <input id="userInput" placeholder="Type a concise health question..." />
+                  <button id="emojiBtnInput" class="emoji-trigger" type="button">😊</button>
+                </div>
+                <button id="sendBtn" class="send-btn" type="submit">
+                  <svg class="send-icon" viewBox="0 0 24 24">
+                    <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+                  </svg>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div class="col right-col">
+            <div id="view-ingest" class="card ingest-card">
+              <div class="card-title">Upload documents</div>
+              <input id="fileInput" type="file" accept=".pdf,.txt" />
+              <div class="ingest-actions">
+                <button id="uploadBtn" class="primary">Upload &amp; Ingest</button>
+              </div>
+              <div id="uploadStatus" class="muted small">No ingestion yet.</div>
+            </div>
+
+            <div id="view-sources" class="card sources-card">
+              <div class="card-title">Indexed Sources</div>
+              <div id="sourcesList" class="sources-list">No sources indexed.</div>
+            </div>
+
+            <div id="view-activity" class="card small hidden">
+              <div class="card-title">Recent Activity</div>
+              <div class="muted">No activity yet.</div>
+            </div>
+
+            <div id="view-settings" class="card small hidden">
+              <div class="card-title">Settings</div>
+              <div class="theme-info">
+                Theme: <span id="currentTheme">Dark</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <div class="signature">Built with care • Sabudh Foundation</div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  anvas id="parallax" class="bg-canvas"></canvas>
+
+  <!-- Emoji picker -->
+  <div id="emojiPicker" class="emoji-picker hidden">
+    <div class="emoji-grid">
+      <span>😊</span><span>👍</span><span>👎</span><span>❤️</span><span>💔</span>
+      <span>🩺</span><span>💊</span><span>🩹</span><span>🫁</span><span>🫀</span>
+      <span>🦠</span><span>🩼</span><span>🔬</span><span>📈</span><span>💉</span>
+      <span>🩺</span><span>🩹</span>
+    </div>
+  </div>
+</body>
+</html>
